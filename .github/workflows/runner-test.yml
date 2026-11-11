@@ -1,0 +1,21 @@
+name: React Runner Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    runs-on: [self-hosted, Windows, X64, react]
+
+    steps:
+      - name: Check Runner
+        shell: powershell
+        run: |
+          Write-Host "React Runner is working"
+          Write-Host "Machine: $env:COMPUTERNAME"
+
+      - name: Check Node
+        shell: powershell
+        run: |
+          node --version
+          npm --version

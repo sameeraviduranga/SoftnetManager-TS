@@ -1,0 +1,47 @@
+name: React CI CD
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+
+    runs-on: [self-hosted, Windows, X64, react]
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Node
+        shell: powershell
+        run: |
+          node --version
+          npm --version
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build React
+        env:
+          VITE_API_BASE_URL: "http://192.168.1.100:5001/api"
+        run: npm run build
+
+      - name: Verify Build
+        shell: powershell
+        run: |
+          if (-not (Test-Path ".\dist")) {
+              Write-Error "React build failed. dist folder not found."
+              exit 1
+          }
+
+          Write-Host "React build successful."
+
+      - name: Deploy to IIS
+        shell: powershell
+        run: |
+          .\scripts\deploy-frontend.ps1
